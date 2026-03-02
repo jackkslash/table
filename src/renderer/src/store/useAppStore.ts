@@ -13,7 +13,6 @@ export interface EditorTab {
   isLoading: boolean;
   error: string | null;
   connectionId: string | null;
-  /** When set, Save updates this saved query instead of creating a new one */
   savedQueryId?: string | null;
 }
 
