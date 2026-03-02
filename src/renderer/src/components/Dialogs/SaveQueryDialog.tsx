@@ -11,6 +11,7 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Loader2 } from 'lucide-react'
+import { toast } from '../../hooks/use-toast'
 
 export function SaveQueryDialog(): JSX.Element {
   const {
@@ -48,6 +49,19 @@ export function SaveQueryDialog(): JSX.Element {
         name: name.trim(),
         sql: sql.trim(),
         connectionId: activeConnectionId ?? null
+      })
+    } catch (err) {
+      const safeMessage =
+        err instanceof Error
+          ? err.message
+          : err != null &&
+              typeof (err as { message?: unknown }).message === 'string'
+            ? (err as { message: string }).message
+            : String(err ?? 'Unknown error')
+      toast({
+        title: 'Save failed',
+        description: safeMessage,
+        variant: 'destructive'
       })
     } finally {
       setSaving(false)

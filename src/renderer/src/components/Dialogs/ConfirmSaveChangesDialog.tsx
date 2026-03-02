@@ -28,6 +28,9 @@ export function ConfirmSaveChangesDialog(): JSX.Element {
     setSaving(true)
     try {
       await confirmSaveChanges()
+    } catch (err) {
+      console.error('[ConfirmSaveChanges] confirmSaveChanges failed:', err)
+      throw err
     } finally {
       setSaving(false)
     }
