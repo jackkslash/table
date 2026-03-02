@@ -8,7 +8,7 @@ import { TableBrowser } from '../ResultsPanel/TableBrowser'
 import { toBucket, trackEvent } from '../../lib/analytics'
 
 export function EditorTab(): JSX.Element {
-  const { tabs, activeTabId, activeConnectionId, connectedIds, updateTab, theme, editorFontSize, openSaveQueryDialog, openSaveChangesConfirm, invalidateTableData } = useAppStore()
+  const { tabs, activeTabId, activeConnectionId, connectedIds, savedQueries, updateTab, theme, editorFontSize, openSaveQueryDialog, openSaveChangesConfirm, invalidateTableData } = useAppStore()
   const activeTab = tabs.find((t) => t.id === activeTabId)
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor | null>(null)
 
@@ -167,6 +167,10 @@ export function EditorTab(): JSX.Element {
 
   if (!activeTab) return <div className="flex-1" />
 
+  const saved = activeTab.savedQueryId ? savedQueries.find((q) => q.id === activeTab.savedQueryId) : null
+  const hasUnsavedChanges = !saved || saved.sql.trim() !== (activeTab.sql ?? '').trim()
+  const showSaveButton = hasUnsavedChanges
+
   if (activeTab.mode === 'table' && activeTab.tableMeta) {
     return <TableBrowser tab={activeTab} />
   }
@@ -178,16 +182,18 @@ export function EditorTab(): JSX.Element {
           {isConnected ? `Connected` : 'No connection — select one from the sidebar'}
         </span>
         <div className="flex items-center gap-1.5">
-          <Button
-            size="sm"
-            variant="ghost"
-            onClick={handleSaveQuery}
-            className="h-6 gap-1.5 text-xs"
-            title="Save query"
-          >
-            <BookmarkPlus className="h-3 w-3" />
-            Save
-          </Button>
+          {showSaveButton && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleSaveQuery}
+              className="h-6 gap-1.5 text-xs"
+              title="Save query"
+            >
+              <BookmarkPlus className="h-3 w-3" />
+              Save
+            </Button>
+          )}
           <Button
             size="sm"
             onClick={handleRun}

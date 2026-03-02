@@ -497,6 +497,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   openSaveChangesConfirm: (savedQueryId, sql) => {
+    const saved = get().savedQueries.find((q) => q.id === savedQueryId);
+    if (saved && saved.sql.trim() === sql.trim()) return;
     set({ saveChangesConfirmOpen: true, saveChangesConfirmPayload: { savedQueryId, sql } });
   },
 
